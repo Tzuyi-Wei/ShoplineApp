@@ -1,0 +1,32 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        brew install python
+        pip3 install py2app pandas openpyxl
+
+    - name: Build app using py2app
+      run: |
+        python3 setup.py py2app
+
+    - name: Zip output
+      run: |
+        cd dist && zip -r ShoplineApp.zip *.app
+
+    - name: Upload .app as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ShoplineApp
+        path: dist/ShoplineApp.zip
